@@ -1,0 +1,150 @@
+#include <Arduino.h>
+#include <SPI.h>
+#include <RF24.h>
+#include <nRF24L01.h>
+
+int motor1 = 3;
+int motor2 = 4;
+int motor3 = 5;
+int motor4 = 6;
+char val;
+
+RF24 radio(7, 8);
+const byte address[] = "CarryM1";
+
+void setup()
+{
+  pinMode(motor1, OUTPUT); 
+  pinMode(motor2, OUTPUT); 
+  pinMode(motor3, OUTPUT); 
+  pinMode(motor4, OUTPUT); 
+  Serial.begin(9600);
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MAX);
+  radio.stopListening();
+}
+
+void loop()
+{
+  while (Serial.available() > 0)
+  {
+    val = Serial.read();
+    Serial.println(val);
+  }
+
+  if (val == 'F') 
+  {
+    forward();
+    radio.write(&val, sizeof(val));
+  }
+  else if (val == 'B') 
+  {
+    backward();
+    radio.write(&val, sizeof(val));
+  }
+
+  else if (val == 'L') 
+  {
+    left();
+    radio.write(&val, sizeof(val));
+  }
+  else if (val == 'R') 
+  {
+    right();
+    radio.write(&val, sizeof(val));
+  }
+
+  else if (val == 'S') 
+  {
+    digitalWrite(motor1, LOW);
+    digitalWrite(motor2, LOW);
+    digitalWrite(motor3, LOW);
+    digitalWrite(motor4, LOW);
+    radio.write(&val, sizeof(val));
+  }
+  else if (val == 'I') 
+  {
+    forward_right();
+    radio.write(&val, sizeof(val));
+  }
+  else if (val == 'J') 
+  {
+    backward_right();
+    radio.write(&val, sizeof(val));
+  }
+  else if (val == 'G') 
+  {
+    forward_left();
+    radio.write(&val, sizeof(val));
+  }
+  else if (val == 'H') 
+  {
+    backward_left();
+    radio.write(&val, sizeof(val));
+  }
+}
+
+void forward()
+{
+  digitalWrite(motor1, HIGH);
+  digitalWrite(motor2, LOW);
+  digitalWrite(motor3, HIGH);
+  digitalWrite(motor4, LOW);
+}
+
+void backward()
+{
+  digitalWrite(motor1, LOW);
+  digitalWrite(motor2, HIGH);
+  digitalWrite(motor3, LOW);
+  digitalWrite(motor4, HIGH);
+}
+
+void right()
+{
+  digitalWrite(motor1, HIGH);
+  digitalWrite(motor2, LOW);
+  digitalWrite(motor3, LOW);
+  digitalWrite(motor4, LOW);
+}
+
+void left()
+{
+  digitalWrite(motor1, LOW);
+  digitalWrite(motor2, LOW);
+  digitalWrite(motor3, HIGH);
+  digitalWrite(motor4, LOW);
+}
+
+void forward_right()
+{
+  digitalWrite(motor1, HIGH);
+  digitalWrite(motor2, LOW);
+  digitalWrite(motor3, LOW);
+  digitalWrite(motor4, LOW);
+}
+
+void backward_right()
+{
+  digitalWrite(motor1, LOW);
+  digitalWrite(motor2, HIGH);
+  digitalWrite(motor3, LOW);
+  digitalWrite(motor4, LOW);
+}
+
+void forward_left()
+{
+  digitalWrite(motor1, LOW);
+  digitalWrite(motor2, LOW);
+  digitalWrite(motor3, HIGH);
+  digitalWrite(motor4, LOW);
+}
+
+void backward_left()
+{
+  digitalWrite(motor1, LOW);
+  digitalWrite(motor2, LOW);
+  digitalWrite(motor3, LOW);
+  digitalWrite(motor4, HIGH);
+}
